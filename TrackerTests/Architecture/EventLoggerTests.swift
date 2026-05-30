@@ -3,8 +3,8 @@ import Testing
 
 struct EventLoggerTests {
     @Test func compositeLoggerForwardsEventsToEveryProvider() async {
-        let firstLogger = SpyEventLogger()
-        let secondLogger = SpyEventLogger()
+        let firstLogger = MockEventLogger()
+        let secondLogger = MockEventLogger()
         let logger = CompositeEventLogger(loggers: [firstLogger, secondLogger])
         let event = AnalyticsEvent(name: .mealAdded, properties: ["meal_id": "123"])
 

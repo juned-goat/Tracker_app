@@ -6,7 +6,7 @@ struct EmailSignInRequest: Equatable {
     let password: String
 }
 
-actor SpyAuthRepository: AuthRepository {
+actor MockAuthRepository: AuthRepository {
     private(set) var currentSession: UserSession?
     private(set) var emailSignInRequests: [EmailSignInRequest] = []
     private(set) var googleSignInCount = 0
@@ -46,7 +46,7 @@ actor SpyAuthRepository: AuthRepository {
     }
 }
 
-actor SpyEventLogger: EventLogger {
+actor MockEventLogger: EventLogger {
     private(set) var events: [AnalyticsEvent] = []
 
     var eventNames: [AnalyticsEventName] {
