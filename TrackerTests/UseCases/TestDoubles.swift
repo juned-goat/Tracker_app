@@ -12,6 +12,10 @@ actor MockAuthRepository: AuthRepository {
     private(set) var googleSignInCount = 0
     private(set) var signOutCount = 0
 
+    init(currentSession: UserSession? = nil) {
+        self.currentSession = currentSession
+    }
+
     func currentUserSession() async throws -> UserSession? {
         currentSession
     }
@@ -43,6 +47,56 @@ actor MockAuthRepository: AuthRepository {
     func signOut() async throws {
         signOutCount += 1
         currentSession = nil
+    }
+}
+
+actor MockFirebaseAuthClient: FirebaseAuthClient {
+    private(set) var currentUserValue: FirebaseAuthUser?
+    private(set) var emailUser: FirebaseAuthUser
+    private(set) var googleUser: FirebaseAuthUser
+    private(set) var emailSignInRequests: [EmailSignInRequest] = []
+    private(set) var googleSignInCount = 0
+    private(set) var signOutCount = 0
+
+    init(
+        currentUser: FirebaseAuthUser? = nil,
+        emailUser: FirebaseAuthUser = FirebaseAuthUser(
+            userID: "email-user",
+            email: "email@example.com",
+            displayName: nil,
+            providerIDs: ["password"]
+        ),
+        googleUser: FirebaseAuthUser = FirebaseAuthUser(
+            userID: "google-user",
+            email: "google@example.com",
+            displayName: "Google User",
+            providerIDs: ["google.com"]
+        )
+    ) {
+        self.currentUserValue = currentUser
+        self.emailUser = emailUser
+        self.googleUser = googleUser
+    }
+
+    func currentUser() async throws -> FirebaseAuthUser? {
+        currentUserValue
+    }
+
+    func signInWithEmail(email: String, password: String) async throws -> FirebaseAuthUser {
+        emailSignInRequests.append(EmailSignInRequest(email: email, password: password))
+        currentUserValue = emailUser
+        return emailUser
+    }
+
+    func signInWithGoogle() async throws -> FirebaseAuthUser {
+        googleSignInCount += 1
+        currentUserValue = googleUser
+        return googleUser
+    }
+
+    func signOut() async throws {
+        signOutCount += 1
+        currentUserValue = nil
     }
 }
 
