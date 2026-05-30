@@ -16,7 +16,11 @@ struct RootView: View {
             if viewModel == nil {
                 let createdViewModel = RootViewModel(
                     getCurrentSessionUseCase: dependencies.getCurrentSessionUseCase,
-                    signOutUseCase: dependencies.signOutUseCase
+                    signOutUseCase: dependencies.signOutUseCase,
+                    signInWithEmailUseCase: dependencies.signInWithEmailUseCase,
+                    signInWithGoogleUseCase: dependencies.signInWithGoogleUseCase,
+                    loadDailyProgressUseCase: dependencies.loadDailyProgressUseCase,
+                    addMealUseCase: dependencies.addMealUseCase
                 )
                 viewModel = createdViewModel
                 await createdViewModel.loadSession()
@@ -30,20 +34,9 @@ struct RootView: View {
         case .loading:
             ProgressView()
         case .signedOut:
-            LoginView(viewModel: LoginViewModel(
-                signInWithEmailUseCase: dependencies.signInWithEmailUseCase,
-                signInWithGoogleUseCase: dependencies.signInWithGoogleUseCase,
-                onSignedIn: viewModel.didSignIn
-            ))
+            LoginView(viewModel: viewModel.makeLoginViewModel())
         case .signedIn(let session):
-            HomeView(viewModel: HomeViewModel(
-                session: session,
-                loadDailyProgressUseCase: dependencies.loadDailyProgressUseCase,
-                addMealUseCase: dependencies.addMealUseCase,
-                onSignOut: {
-                    Task { await viewModel.signOut() }
-                }
-            ))
+            HomeView(viewModel: viewModel.makeHomeViewModel(for: session))
         case .failed(let message):
             ContentUnavailableView("Something went wrong", systemImage: "exclamationmark.triangle", description: Text(message))
         }

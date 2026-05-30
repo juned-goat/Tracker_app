@@ -13,15 +13,27 @@ final class RootViewModel {
 
     private let getCurrentSessionUseCase: GetCurrentSessionUseCase
     private let signOutUseCase: SignOutUseCase
+    private let signInWithEmailUseCase: SignInWithEmailUseCase
+    private let signInWithGoogleUseCase: SignInWithGoogleUseCase
+    private let loadDailyProgressUseCase: LoadDailyProgressUseCase
+    private let addMealUseCase: AddMealUseCase
 
     private(set) var state: State = .loading
 
     init(
         getCurrentSessionUseCase: GetCurrentSessionUseCase,
-        signOutUseCase: SignOutUseCase
+        signOutUseCase: SignOutUseCase,
+        signInWithEmailUseCase: SignInWithEmailUseCase,
+        signInWithGoogleUseCase: SignInWithGoogleUseCase,
+        loadDailyProgressUseCase: LoadDailyProgressUseCase,
+        addMealUseCase: AddMealUseCase
     ) {
         self.getCurrentSessionUseCase = getCurrentSessionUseCase
         self.signOutUseCase = signOutUseCase
+        self.signInWithEmailUseCase = signInWithEmailUseCase
+        self.signInWithGoogleUseCase = signInWithGoogleUseCase
+        self.loadDailyProgressUseCase = loadDailyProgressUseCase
+        self.addMealUseCase = addMealUseCase
     }
 
     func loadSession() async {
@@ -38,6 +50,25 @@ final class RootViewModel {
 
     func didSignIn(_ session: UserSession) {
         state = .signedIn(session)
+    }
+
+    func makeLoginViewModel() -> LoginViewModel {
+        LoginViewModel(
+            signInWithEmailUseCase: signInWithEmailUseCase,
+            signInWithGoogleUseCase: signInWithGoogleUseCase,
+            onSignedIn: didSignIn
+        )
+    }
+
+    func makeHomeViewModel(for session: UserSession) -> HomeViewModel {
+        HomeViewModel(
+            session: session,
+            loadDailyProgressUseCase: loadDailyProgressUseCase,
+            addMealUseCase: addMealUseCase,
+            onSignOut: {
+                Task { await self.signOut() }
+            }
+        )
     }
 
     func signOut() async {
