@@ -7,9 +7,9 @@ struct AppDependencyContainer: Sendable {
     let eventLogger: any EventLogger
 
     static func live() -> AppDependencyContainer {
-        let eventLogger = NoOpEventLogger()
+        let eventLogger = FirebaseEventLogger()
         return AppDependencyContainer(
-            authRepository: InMemoryAuthRepository(),
+            authRepository: FirebaseAuthRepository(),
             mealRepository: InMemoryMealRepository(),
             eventLogger: eventLogger
         )
