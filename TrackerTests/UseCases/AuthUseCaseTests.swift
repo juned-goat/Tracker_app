@@ -3,8 +3,8 @@ import Testing
 
 struct AuthUseCaseTests {
     @Test func emailSignInDelegatesToRepositoryAndLogsLifecycleEvents() async throws {
-        let repository = SpyAuthRepository()
-        let logger = SpyEventLogger()
+        let repository = MockAuthRepository()
+        let logger = MockEventLogger()
         let useCase = SignInWithEmailUseCase(authRepository: repository, eventLogger: logger)
 
         let session = try await useCase.execute(email: "test@example.com", password: "secret")
@@ -17,8 +17,8 @@ struct AuthUseCaseTests {
     }
 
     @Test func googleSignInDelegatesToRepositoryAndLogsLifecycleEvents() async throws {
-        let repository = SpyAuthRepository()
-        let logger = SpyEventLogger()
+        let repository = MockAuthRepository()
+        let logger = MockEventLogger()
         let useCase = SignInWithGoogleUseCase(authRepository: repository, eventLogger: logger)
 
         let session = try await useCase.execute()

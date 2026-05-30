@@ -24,7 +24,7 @@ struct MealUseCaseTests {
                 macros: MacroBreakdown(calories: 900, proteinGrams: 60, carbohydrateGrams: 90, fatGrams: 25)
             )
         ], calendar: calendar)
-        let logger = SpyEventLogger()
+        let logger = MockEventLogger()
         let useCase = LoadDailyProgressUseCase(mealRepository: repository, eventLogger: logger)
 
         let progress = try await useCase.execute(for: today)
@@ -39,7 +39,7 @@ struct MealUseCaseTests {
 
     @Test func addingMealPersistsThroughRepositoryAndLogsEvent() async throws {
         let repository = InMemoryMealRepository()
-        let logger = SpyEventLogger()
+        let logger = MockEventLogger()
         let useCase = AddMealUseCase(mealRepository: repository, eventLogger: logger)
         let meal = MealEntry(
             id: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
