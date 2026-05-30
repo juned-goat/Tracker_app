@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseCore
+import GoogleSignIn
 
 @main
 struct TrackerApp: App {
@@ -21,6 +22,9 @@ struct TrackerApp: App {
         WindowGroup {
             RootView()
                 .environment(\.appDependencies, dependencyContainer)
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
         }
     }
 }
